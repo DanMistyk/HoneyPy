@@ -20,6 +20,10 @@ from twisted.python import log
 from twisted.python.log import ILogObserver, FileLogObserver
 from twisted.python.logfile import DailyLogFile
 
+import txthings.coap as coap
+import txthings.resource as resource
+from plugins.CoAP.server import CounterResource, BlockResource, CoreResource, SeparateLargeResource, TimeResource
+
 # prevent creation of compiled bytecode files
 sys.dont_write_bytecode = True
 
@@ -130,7 +134,34 @@ for service in service_config.sections():
 				service_object = reactor.listenTCP(int(port), plugin.pluginFactory(service))
 			else:
 				# run udp service
-				service_object = reactor.listenUDP(int(port), plugin.pluginMain(service, get_ip_address(), port))
+				if 'CoAP' == service:
+					root = resource.CoAPResource()
+
+					well_known = resource.CoAPResource()
+					root.putChild('.well-known', well_known)
+					core = CoreResource(root)
+					well_known.putChild('core', core)
+
+					counter = CounterResource(5000)
+					root.putChild('counter', counter)
+
+					time = TimeResource()
+					root.putChild('time', time)
+
+					other = resource.CoAPResource()
+					root.putChild('other', other)
+
+					block = BlockResource()
+					other.putChild('block', block)
+
+					separate = SeparateLargeResource()
+					other.putChild('separate', separate)
+
+					endpoint = resource.Endpoint(root)
+
+					service_object = reactor.listenUDP(int(port), coap.Coap(endpoint))
+				else:
+					service_object = reactor.listenUDP(int(port), plugin.pluginMain(service, get_ip_address(), port))
 
 			if service_object:
 				# stop services from listening immediately if not starting in daemon mode.
