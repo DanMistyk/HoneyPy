@@ -107,7 +107,7 @@ class TimeResource(resource.CoAPResource):
         self.notify()
 
     def notify(self):
-        log.msg('TimeResource: trying to send notifications')
+        #log.msg('TimeResource: trying to send notifications')
         self.updatedState()
         reactor.callLater(60, self.notify)
 
@@ -144,30 +144,4 @@ class CoreResource(resource.CoAPResource):
         response.opt.content_format = coap.media_types_rev['application/link-format']
         return defer.succeed(response)
 
-# Resource tree creation
-# log.startLogging(sys.stdout)
-# root = resource.CoAPResource()
 
-# well_known = resource.CoAPResource()
-# root.putChild('.well-known', well_known)
-# core = CoreResource(root)
-# well_known.putChild('core', core)
-
-# counter = CounterResource(5000)
-# root.putChild('counter', counter)
-
-# time = TimeResource()
-# root.putChild('time', time)
-
-# other = resource.CoAPResource()
-# root.putChild('other', other)
-
-# block = BlockResource()
-# other.putChild('block', block)
-
-# separate = SeparateLargeResource()
-# other.putChild('separate', separate)
-
-# endpoint = resource.Endpoint(root)
-# reactor.listenUDP(coap.COAP_PORT, coap.Coap(endpoint)) #, interface="::")
-# reactor.run()
