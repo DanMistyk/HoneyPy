@@ -20,8 +20,8 @@ from twisted.python import log
 from twisted.python.log import ILogObserver, FileLogObserver
 from twisted.python.logfile import DailyLogFile
 
-import txthings.coap as coap
-import txthings.resource as resource
+import plugins.CoAP.txthings.coap as coap
+import plugins.CoAP.txthings.resource as resource
 from plugins.CoAP.server import CounterResource, BlockResource, CoreResource, SeparateLargeResource, TimeResource
 
 # prevent creation of compiled bytecode files
